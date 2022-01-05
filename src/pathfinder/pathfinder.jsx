@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Node from './node/node';
 import './pathfinder.css';
 import { dijkstra, shortestPath } from '../algorithms/dijkstra';
+import { aStar } from '../algorithms/astar';
 import classnames from 'classnames'
 
 const NUM_COLS = 30;
@@ -92,25 +93,33 @@ export default class Pathfinder extends Component {
         this.animate(visitedNodesInOrder)
     }
 
+    visualizeAStar() {
+        const { nodes } = this.state
+        const startNode = nodes[START_ROWS][START_COLS];
+        const finishNode = nodes[END_ROWS][END_COLS];
+        const visitedNodesInOrder = aStar(nodes, startNode, finishNode)
+        this.animate(visitedNodesInOrder)
+    }
+
     render() {
         const { nodes } = this.state;
         return (
             <>
                 <div class="header">
                     <h1>A Simple Pathfinding Visualizer</h1>
-                    <button className={classnames('button1',{'disabled':action,'enabled':!action})} onClick={() => {
+                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
                             this.visualizeDijkstra()
                         }
                         action = true
                     }}>Dijkstra</button>
-                    <button className={classnames('button1',{'disabled':action,'enabled':!action})} onClick={() => {
+                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
-                            this.visualizeDijkstra()
+                            this.visualizeAStar()
                         }
                         action = true
                     }}>A*</button>
-                    <button className={classnames('button1',{'disabled':action, 'enabled':!action})} onClick={() => {
+                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
                             this.clearBoard()
                         }
@@ -165,10 +174,15 @@ const createNode = (col, row) => {
         row,
         isStart: row === START_ROWS && col === START_COLS,
         isFinish: row === END_ROWS && col === END_COLS,
+        closed: false,
         isVisited: false,
         Animate: false,
         isPath: false,
         distance: Infinity,
+        f: 0,
+        g: 0,
+        h: 0,
+        debug: "",
         isWall: false,
         previousNode: null,
     }

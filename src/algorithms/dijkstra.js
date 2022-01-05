@@ -1,4 +1,3 @@
-
 export function dijkstra(grid, startNode, finishNode){
     const visitedNodesInOrder = [];
     if(!startNode||!finishNode||startNode===finishNode){
@@ -18,7 +17,6 @@ export function dijkstra(grid, startNode, finishNode){
         updateUnivisitedNeighbours(closestNode,grid);
     }
 }
-
 
 function sortNodesByDistance(univistedNodes){
     univistedNodes.sort((nodeA,nodeB)=>nodeA.distance - nodeB.distance)

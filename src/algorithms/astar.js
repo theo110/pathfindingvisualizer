@@ -1,65 +1,66 @@
-
-export function astar(nodes, startNode, finishNode){
+export function aStar(grid, startNode, finishNode) {
+    console.log("shortt")
     const visitedNodesInOrder = [];
-    if(!startNode||!finishNode||startNode===finishNode){
-        return false;
-    }
-    startNode.distance = 0;
-    const univistedNodes = getAllNodes(grid);
-    while(!!univistedNodes.length){
-        sortNodesByDistance(univistedNodes);
-        const closestNode = univistedNodes.shift();
-        if(closestNode.isWall) continue;
-        closestNode.isVisited = true;
-        visitedNodesInOrder.push(closestNode)
-        if(closestNode===finishNode){
+    var openList = [];
+    openList.push(startNode);
+
+    while (openList.length > 0) {
+        var lowestI = 0;
+        for (var i = 0; i < openList.length; i++) {
+            if (openList[i].f < openList[lowestI].f){
+                lowestI = i;
+            }
+        }
+        var currentNode = openList.splice(lowestI,1)[0];
+        visitedNodesInOrder.push(currentNode)
+        if (currentNode === finishNode) {
             return visitedNodesInOrder;
         }
-        updateUnivisitedNeighbours(closestNode,grid);
-    }
-}
+        currentNode.closed = true;
 
+        var neighbors = getNeighbours(currentNode,grid);
+        for (var i = 0; i < neighbors.length; i++) {
+            var neighbor = neighbors[i];
+            if (neighbor.closed || neighbor.isWall) {
+                continue;
+            }
 
-function sortNodesByDistance(univistedNodes){
-    univistedNodes.sort((nodeA,nodeB)=>nodeA.distance - nodeB.distance)
-}
+            var gScore = currentNode.g + 1; 
+            var gScoreIsBest = false;
+            var bestNode = null;
 
-function updateUnivisitedNeighbours(node,grid){
-    const univistedNeighbours = getUnivistedNeighbours(node,grid)
-    for(const neighbour of univistedNeighbours){
-        neighbour.distance = node.distance+1;
-        neighbour.previousNode = node;
-    }
-}
+            if (!neighbor.isVisited) {
+                gScoreIsBest = true;
+                neighbor.h = getH(neighbor, finishNode);
+                neighbor.isVisited = true;
+                openList.push(neighbor);
+            }
+            else if (gScore < neighbor.g) {
+                gScoreIsBest = true;
+            }
 
-function getUnivistedNeighbours(node, grid){
-    const neighbours = [];
-    const {col, row} = node;
-    if(row>0) neighbours.push(grid[row-1][col])
-    if(row<grid.length-1) neighbours.push(grid[row+1][col])
-    if(col>0) neighbours.push(grid[row][col-1])
-    if(col<grid[0].length-1) neighbours.push(grid[row][col+1])
-    return neighbours.filter(neighbour => !neighbour.isVisited)
-}
-
-function getAllNodes(grid){
-    const nodes = [];
-    for(const row of grid){
-        for(const node of row){
-            nodes.push(node);
+            if (gScoreIsBest) {
+                bestNode = neighbor
+                neighbor.previousNode = currentNode;
+                neighbor.g = gScore;
+                neighbor.f = neighbor.g + neighbor.h;
+                neighbor.debug = "F: " + neighbor.f + "<br />G: " + neighbor.g + "<br />H: " + neighbor.h;
+            }
         }
     }
-    return nodes;
+    return false;
 }
 
-export function shortestPath(finishNode){
-    const shortestPath = [];
-    let currentNode = finishNode;
-    
-    while(currentNode!==null){
-        shortestPath.unshift(currentNode);
-        currentNode=currentNode.previousNode;
-    }
-    
-    return shortestPath
+function getH(node, finishNode) {
+    return Math.abs(node.col - finishNode.col) + Math.abs(node.row - finishNode.row);
+}
+
+function getNeighbours(node, grid) {
+    const neighbours = [];
+    const { col, row } = node;
+    if (row > 0) neighbours.push(grid[row - 1][col])
+    if (row < grid.length - 1) neighbours.push(grid[row + 1][col])
+    if (col > 0) neighbours.push(grid[row][col - 1])
+    if (col < grid[0].length - 1) neighbours.push(grid[row][col + 1])
+    return neighbours
 }

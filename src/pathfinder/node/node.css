@@ -1,0 +1,48 @@
+.Node{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: white;
+    display: inline-block;
+}
+
+.Start{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: blue;
+    display: inline-block;
+}
+
+.Finish{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: violet;
+    display: inline-block;
+}
+
+
+.Animate{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: green;
+    display: inline-block;
+}
+
+.Path{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: yellow;
+    display: inline-block;
+}
+
+.Wall{
+    width: 40px;
+    height: 40px;
+    outline:1px solid black;
+    background-color: black;
+    display: inline-block;
+}

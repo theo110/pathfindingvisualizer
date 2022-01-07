@@ -1,0 +1,29 @@
+.box {
+    width: 800px;
+    max-width: 100%;
+    margin: 0 auto;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background-color: #F0F8FF;
+    padding: 15px 15px 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.close {
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 50%;
+    border: none;
+    color: #96afd9;
+    width: 30px;
+    height: 30px;
+    background-color: #F0F8FF;
+    font-weight: 1000;
+    align-self: flex-end;
+}

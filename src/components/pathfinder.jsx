@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Node from './node/node';
+import Node from './node';
+import Tutorial from './tutorial';
 import './pathfinder.css';
 import { dijkstra, shortestPath } from '../algorithms/dijkstra';
 import { aStar } from '../algorithms/astar';
@@ -21,6 +22,7 @@ export default class Pathfinder extends Component {
         this.state = {
             nodes: [],
             mouseIsPressed: false,
+            openBox: true,
         };
     }
 
@@ -105,6 +107,18 @@ export default class Pathfinder extends Component {
         const { nodes } = this.state;
         return (
             <>
+                <div class="tutorialbox">
+                    <Tutorial isOpen={this.state.openBox} onClose={(e) => this.setState({ openBox: false })}>
+                        <div className='tutorial tutorialhead'>Welcome to my Pathfinding Visualizer</div>
+                        <div className='tutorial tutorialtext'>Here is a brief tutorial:</div>
+                        <ul class='tutorial tutoriallist'>
+                            <li>The yellow square is the start and the green square is the end</li>
+                            <li>Click anywhere on the grid to add/remove walls</li>
+                            <li>Click the buttons on the header to visualize an algorithm or clear the board</li>
+                            <li>Have fun!</li>
+                        </ul>
+                    </Tutorial>
+                </div>
                 <div class="header">
                     <h1>A Simple Pathfinding Visualizer</h1>
                     <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {

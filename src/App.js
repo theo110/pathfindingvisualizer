@@ -1,5 +1,5 @@
 import React from 'react';
-import Pathfinder from './pathfinder/pathfinder';
+import Pathfinder from './components/pathfinder';
 import './App.css';
 
 function App() {

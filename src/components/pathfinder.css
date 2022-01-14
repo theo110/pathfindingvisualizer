@@ -11,15 +11,15 @@
 }
 
 .button1{
-    background-color: #008CBA; 
+    background-color: #0d6efd; 
     border: none;
-    border-radius: 8%;
+    border-radius: 5%;
     color: white;
-    padding: 15px 32px;
+    padding: 5px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 18px;
     margin: 4px 2px;
 }
 
@@ -34,7 +34,7 @@
 }
 
 .button1:active{
-    background-color: blue;
+    background-color: darkblue;
 }
 
 .tutorial{

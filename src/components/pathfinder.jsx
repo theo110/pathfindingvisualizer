@@ -4,7 +4,9 @@ import Tutorial from './tutorial';
 import './pathfinder.css';
 import { dijkstra, shortestPath } from '../algorithms/dijkstra';
 import { aStar } from '../algorithms/astar';
-import classnames from 'classnames'
+import classnames from 'classnames';
+import { Dropdown } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const NUM_COLS = 30;
 const NUM_ROWS = 15;
@@ -23,6 +25,7 @@ export default class Pathfinder extends Component {
             nodes: [],
             mouseIsPressed: false,
             openBox: true,
+            algorithm: 0,
         };
     }
 
@@ -44,6 +47,31 @@ export default class Pathfinder extends Component {
     clearBoard() {
         const nodes = getInitialGrid()
         this.setState({ nodes })
+    }
+
+    reset() {
+        const { nodes } = this.state
+        for (let row = 0; row < NUM_ROWS; row++) {
+            for (let col = 0; col < NUM_COLS; col++) {
+                const node = nodes[row][col];
+                const newNode = {
+                    ...node,
+                    closed: false,
+                    isVisited: false,
+                    Animate: false,
+                    isPath: false,
+                    distance: Infinity,
+                    f: 0,
+                    g: 0,
+                    h: 0,
+                    debug: "",
+                    previousNode: null,
+                };
+                nodes[row][col] = newNode
+            }
+        }
+        this.setState({ nodes })
+
     }
 
     animatePath(shortestPath) {
@@ -103,6 +131,21 @@ export default class Pathfinder extends Component {
         this.animate(visitedNodesInOrder)
     }
 
+    visualize() {
+        const { nodes, algorithm } = this.state
+        const startNode = nodes[START_ROWS][START_COLS];
+        const finishNode = nodes[END_ROWS][END_COLS];
+        switch (algorithm) {
+            case 1:
+                var visitedNodesInOrder = dijkstra(nodes, startNode, finishNode)
+                break;
+            case 2:
+                var visitedNodesInOrder = aStar(nodes, startNode, finishNode)
+                break;
+        }
+        this.animate(visitedNodesInOrder)
+    }
+
     render() {
         const { nodes } = this.state;
         return (
@@ -114,25 +157,37 @@ export default class Pathfinder extends Component {
                         <ul class='tutorial tutoriallist'>
                             <li>The yellow square is the start and the green square is the end</li>
                             <li>Click anywhere on the grid to add/remove walls</li>
-                            <li>Click the buttons on the header to visualize an algorithm or clear the board</li>
+                            <li>To visualize an algorithm, you must first select the algorithm with the dropdown button</li>
                             <li>Have fun!</li>
                         </ul>
                     </Tutorial>
                 </div>
                 <div class="header">
                     <h1>A Simple Pathfinding Visualizer</h1>
+                    <Dropdown className="d-inline mx-2">
+                        <Dropdown.Toggle id="dropdown-autoclose-true">
+                            Algorithms
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => {
+                                this.state.algorithm = 1;
+                            }}>Dijkstra</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {
+                                this.state.algorithm = 2;
+                            }}>A*</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
                     <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
-                            this.visualizeDijkstra()
+                            this.visualize()
                         }
                         action = true
-                    }}>Dijkstra</button>
+                    }}>Visualize</button>
                     <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
-                            this.visualizeAStar()
+                            this.reset()
                         }
-                        action = true
-                    }}>A*</button>
+                    }}>Reset</button>
                     <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
                         if (action === false) {
                             this.clearBoard()

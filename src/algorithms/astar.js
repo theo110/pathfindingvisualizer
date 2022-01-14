@@ -1,5 +1,4 @@
 export function aStar(grid, startNode, finishNode) {
-    console.log("shortt")
     const visitedNodesInOrder = [];
     var openList = [];
     openList.push(startNode);

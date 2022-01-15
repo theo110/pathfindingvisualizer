@@ -3,11 +3,27 @@
 }
 
 .header{
-    padding: 69px;
+    padding: 60px;
     text-align: center;
     background: #96afd9;
+}
+
+.title{
+    font-weight: bold;
     color: white;
-    font-size: 30px;
+    font-size: 40px;
+}
+
+.distance{
+    color: white;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.settings{
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button1{

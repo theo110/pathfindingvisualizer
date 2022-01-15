@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Node from './node';
-import Tutorial from './tutorial';
+import PopUp from './popup';
+import Form from './form'
 import './pathfinder.css';
 import { dijkstra, shortestPath } from '../algorithms/dijkstra';
 import { aStar } from '../algorithms/astar';
@@ -10,10 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const NUM_COLS = 30;
 const NUM_ROWS = 15;
-const START_COLS = 5;
-const START_ROWS = 10;
-const END_COLS = 25;
-const END_ROWS = 5;
 
 //track if program is animating
 let action = false;
@@ -25,8 +22,15 @@ export default class Pathfinder extends Component {
             nodes: [],
             mouseIsPressed: false,
             openBox: true,
+            changeStartEnd: false,
             algorithm: 0,
+            distance: "",
+            srow: 5,
+            scol: 5,
+            erow: 5,
+            ecol: 25,
         };
+        this.changeSE = this.changeSE.bind(this)
     }
 
     componentDidMount() {
@@ -45,17 +49,63 @@ export default class Pathfinder extends Component {
     }
 
     clearBoard() {
-        const nodes = getInitialGrid()
-        this.setState({ nodes })
+        const nodes = this.getInitialGrid()
+        this.setState({ nodes: nodes, distance: "" })
+    }
+
+    changeSE(sr, sc, er, ec) {
+        this.setState({
+            srow: sr,
+            scol: sc,
+            erow: er,
+            ecol: ec,
+        }, () => {
+            this.reset();
+        })
+    }
+
+    getInitialGrid = () => {
+        const nodes = [];
+        for (let row = 0; row < NUM_ROWS; row++) {
+            const currentRow = [];
+            for (let col = 0; col < NUM_COLS; col++) {
+                currentRow.push(this.createNode(col, row))
+            }
+            nodes.push(currentRow)
+        }
+        return nodes;
+    }
+
+    createNode = (col, row) => {
+        const { srow, scol, erow, ecol } = this.state
+        return {
+            col,
+            row,
+            isStart: row == srow && col == scol,
+            isFinish: row == erow && col == ecol,
+            closed: false,
+            isVisited: false,
+            Animate: false,
+            isPath: false,
+            distance: Infinity,
+            f: 0,
+            g: 0,
+            h: 0,
+            debug: "",
+            isWall: false,
+            previousNode: null,
+        }
     }
 
     reset() {
-        const { nodes } = this.state
+        const { nodes, srow, scol, erow, ecol } = this.state
         for (let row = 0; row < NUM_ROWS; row++) {
             for (let col = 0; col < NUM_COLS; col++) {
                 const node = nodes[row][col];
                 const newNode = {
                     ...node,
+                    isStart: row == srow && col == scol,
+                    isFinish: row == erow && col == ecol,
                     closed: false,
                     isVisited: false,
                     Animate: false,
@@ -70,8 +120,7 @@ export default class Pathfinder extends Component {
                 nodes[row][col] = newNode
             }
         }
-        this.setState({ nodes })
-
+        this.setState({ nodes: nodes, distance: "" })
     }
 
     animatePath(shortestPath) {
@@ -86,6 +135,8 @@ export default class Pathfinder extends Component {
                 newGrid[node.row][node.col] = newNode;
                 this.setState({ nodes: newGrid });
                 if (i === shortestPath.length - 2) {
+                    const d = String(i + 1) + " units."
+                    this.setState({ distance: d })
                     action = false;
                 }
             }, 30 * i)
@@ -115,26 +166,10 @@ export default class Pathfinder extends Component {
         }
     }
 
-    visualizeDijkstra() {
-        const { nodes } = this.state
-        const startNode = nodes[START_ROWS][START_COLS];
-        const finishNode = nodes[END_ROWS][END_COLS];
-        const visitedNodesInOrder = dijkstra(nodes, startNode, finishNode)
-        this.animate(visitedNodesInOrder)
-    }
-
-    visualizeAStar() {
-        const { nodes } = this.state
-        const startNode = nodes[START_ROWS][START_COLS];
-        const finishNode = nodes[END_ROWS][END_COLS];
-        const visitedNodesInOrder = aStar(nodes, startNode, finishNode)
-        this.animate(visitedNodesInOrder)
-    }
-
     visualize() {
         const { nodes, algorithm } = this.state
-        const startNode = nodes[START_ROWS][START_COLS];
-        const finishNode = nodes[END_ROWS][END_COLS];
+        const startNode = nodes[this.state.srow][this.state.scol];
+        const finishNode = nodes[this.state.erow][this.state.ecol];
         switch (algorithm) {
             case 1:
                 var visitedNodesInOrder = dijkstra(nodes, startNode, finishNode)
@@ -151,48 +186,65 @@ export default class Pathfinder extends Component {
         return (
             <>
                 <div class="tutorialbox">
-                    <Tutorial isOpen={this.state.openBox} onClose={(e) => this.setState({ openBox: false })}>
+                    <PopUp isOpen={this.state.openBox} onClose={(e) => this.setState({ openBox: false })}>
                         <div className='tutorial tutorialhead'>Welcome to my Pathfinding Visualizer</div>
                         <div className='tutorial tutorialtext'>Here is a brief tutorial:</div>
-                        <ul class='tutorial tutoriallist'>
+                        <ul className='tutorial tutoriallist'>
                             <li>The yellow square is the start and the green square is the end</li>
                             <li>Click anywhere on the grid to add/remove walls</li>
                             <li>To visualize an algorithm, you must first select the algorithm with the dropdown button</li>
                             <li>Have fun!</li>
                         </ul>
-                    </Tutorial>
+                    </PopUp>
+                    <PopUp isOpen={this.state.changeStartEnd} onClose={(e) => this.setState({ changeStartEnd: false })}>
+                        <Form
+                            srow={this.state.srow}
+                            scol={this.state.scol}
+                            erow={this.state.erow}
+                            ecol={this.state.ecol}
+                            changeSE={this.changeSE}
+                        ></Form>
+                    </PopUp>
                 </div>
                 <div class="header">
-                    <h1>A Simple Pathfinding Visualizer</h1>
-                    <Dropdown className="d-inline mx-2">
-                        <Dropdown.Toggle id="dropdown-autoclose-true">
-                            Algorithms
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => {
-                                this.state.algorithm = 1;
-                            }}>Dijkstra</Dropdown.Item>
-                            <Dropdown.Item onClick={() => {
-                                this.state.algorithm = 2;
-                            }}>A*</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                        if (action === false) {
-                            this.visualize()
-                        }
-                        action = true
-                    }}>Visualize</button>
-                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                        if (action === false) {
-                            this.reset()
-                        }
-                    }}>Reset</button>
-                    <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                        if (action === false) {
-                            this.clearBoard()
-                        }
-                    }}>Clear Board</button>
+                    <div class="title">A Simple Pathfinding Visualizer</div>
+                    <div class="settings">
+                        <Dropdown className="d-inline mx-2">
+                            <Dropdown.Toggle id="dropdown-autoclose-true">
+                                Algorithms
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => {
+                                    this.setState({ algorithm: 1 })
+                                }}>Dijkstra</Dropdown.Item>
+                                <Dropdown.Item onClick={() => {
+                                    this.setState({ algorithm: 2 })
+                                }}>A*</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
+                            if (action === false) {
+                                this.visualize()
+                            }
+                            action = true
+                        }}>Visualize</button>
+                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
+                            if (action === false) {
+                                this.reset()
+                            }
+                        }}>Reset</button>
+                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
+                            if (action === false) {
+                                this.clearBoard()
+                            }
+                        }}>Clear Board</button>
+                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
+                            if (action === false) {
+                                this.setState({ changeStartEnd: true })
+                            }
+                        }}>Change start/end</button>
+                    </div>
+                    <div className="distance">The path distance is: {this.state.distance}</div>
                 </div>
                 <div className="board">
                     {
@@ -222,38 +274,6 @@ export default class Pathfinder extends Component {
                 </div>
             </>
         );
-    }
-}
-
-const getInitialGrid = () => {
-    const nodes = [];
-    for (let row = 0; row < NUM_ROWS; row++) {
-        const currentRow = [];
-        for (let col = 0; col < NUM_COLS; col++) {
-            currentRow.push(createNode(col, row))
-        }
-        nodes.push(currentRow)
-    }
-    return nodes;
-}
-
-const createNode = (col, row) => {
-    return {
-        col,
-        row,
-        isStart: row === START_ROWS && col === START_COLS,
-        isFinish: row === END_ROWS && col === END_COLS,
-        closed: false,
-        isVisited: false,
-        Animate: false,
-        isPath: false,
-        distance: Infinity,
-        f: 0,
-        g: 0,
-        h: 0,
-        debug: "",
-        isWall: false,
-        previousNode: null,
     }
 }
 

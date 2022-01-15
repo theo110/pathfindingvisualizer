@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './tutorial.css';
+import './popup.css';
 
-class Tutorial extends Component {
+class PopUp extends Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -25,4 +25,4 @@ class Tutorial extends Component {
     }
 }
 
-export default Tutorial;
+export default PopUp;

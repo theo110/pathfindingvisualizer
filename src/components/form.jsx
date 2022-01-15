@@ -19,10 +19,6 @@ class Form extends Component {
     }
 
     handleSubmit(event) {
-        alert('sr ' + this.state.srow);
-        alert('sc ' + this.state.scol);
-        alert('er ' + this.state.erow);
-        alert('ec ' + this.state.ecol);
         const { srow, scol, erow, ecol } = this.state;
         this.props.changeSE(srow, scol, erow, ecol)
         event.preventDefault();

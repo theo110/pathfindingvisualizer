@@ -12,9 +12,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const NUM_COLS = 30;
 const NUM_ROWS = 15;
 
-//track if program is animating
-let action = false;
-
 export default class Pathfinder extends Component {
     constructor(props) {
         super(props);
@@ -23,12 +20,13 @@ export default class Pathfinder extends Component {
             mouseIsPressed: false,
             openBox: true,
             changeStartEnd: false,
-            algorithm: 0,
+            algorithm: 2,
             distance: "",
             srow: 5,
             scol: 5,
             erow: 5,
             ecol: 25,
+            action: false,
         };
         this.changeSE = this.changeSE.bind(this)
     }
@@ -38,13 +36,13 @@ export default class Pathfinder extends Component {
     }
 
     handleMouseDown(row, col) {
-        if (action) return
+        if (this.state.action) return
         const newGrid = changeWall(this.state.nodes, row, col)
         this.setState({ nodes: newGrid, mouseIsPressed: true });
     }
 
     handleMouseUp() {
-        if (action) return
+        if (this.state.action) return
         this.setState({ mouseIsPressed: false })
     }
 
@@ -136,8 +134,7 @@ export default class Pathfinder extends Component {
                 this.setState({ nodes: newGrid });
                 if (i === shortestPath.length - 2) {
                     const d = String(i + 1) + " units."
-                    this.setState({ distance: d })
-                    action = false;
+                    this.setState({ distance: d, action: false})
                 }
             }, 30 * i)
         }
@@ -222,24 +219,24 @@ export default class Pathfinder extends Component {
                                 }}>A*</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
-                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                            if (action === false) {
+                        <button className={classnames('button1', { 'disabled': this.state.action, 'enabled': !this.state.action })} onClick={() => {
+                            if (this.state.action === false) {
                                 this.visualize()
                             }
-                            action = true
+                            this.setState({action:true})
                         }}>Visualize</button>
-                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                            if (action === false) {
+                        <button className={classnames('button1', { 'disabled': this.state.action, 'enabled': !this.state.action })} onClick={() => {
+                            if (this.state.action === false) {
                                 this.reset()
                             }
                         }}>Reset</button>
-                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                            if (action === false) {
+                        <button className={classnames('button1', { 'disabled': this.state.action, 'enabled': !this.state.action })} onClick={() => {
+                            if (this.state.action === false) {
                                 this.clearBoard()
                             }
                         }}>Clear Board</button>
-                        <button className={classnames('button1', { 'disabled': action, 'enabled': !action })} onClick={() => {
-                            if (action === false) {
+                        <button className={classnames('button1', { 'disabled': this.state.action, 'enabled': !this.state.action })} onClick={() => {
+                            if (this.state.action === false) {
                                 this.setState({ changeStartEnd: true })
                             }
                         }}>Change start/end</button>

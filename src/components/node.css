@@ -4,6 +4,7 @@
     outline:1px solid black;
     background-color: white;
     display: inline-block;
+    vertical-align: top;
 }
 
 .Start{
@@ -12,6 +13,8 @@
     outline:1px solid black;
     background-color: #f2edba;
     display: inline-block;
+    vertical-align: top;
+
 }
 
 .Finish{
@@ -20,6 +23,8 @@
     outline:1px solid black;
     background-color: #9beec2;
     display: inline-block;
+    vertical-align: top;
+
 }
 
 
@@ -29,6 +34,8 @@
     outline:1px solid black;
     background-color: #75b7ea;
     display: inline-block;
+    vertical-align: top;
+
 }
 
 .Path{
@@ -37,6 +44,8 @@
     outline:1px solid black;
     background-color: #e171cb;
     display: inline-block;
+    vertical-align: top;
+
 }
 
 .Wall{
@@ -45,4 +54,5 @@
     outline:1px solid black;
     background-color: black;
     display: inline-block;
+    vertical-align: top;
 }
